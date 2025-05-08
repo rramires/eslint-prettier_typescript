@@ -102,4 +102,109 @@ dist
 npx tsx src/index.ts 
 ```
 
+--- 
+
+### Instação e configuração do Eslint + Prettier
+
+* Na versão mais nova do Eslint, não é mais papel do Eslint verificar estilos. Por isso não tem mais as opções de escolher os modelos do Airbnb, Google, etc  
+Para isso devemos usar o Prettier daqui pra frente para formatação do código.
+
+1 - Instale o Eslint:  
+[Getting Started with ESLint](https://eslint.org/docs/latest/use/getting-started)
+```sh
+npm init @eslint/config@latest
+```  
+Siga o passo a passo, altamente intuitivo.  
+(Use a barra de espaços para selecionar as opções)  
+
+No meu caso:  
+1. ✔ JavaScript  
+2. To check syntax and find problems  
+3. JavaScript modules (import/export)  
+4. None of these
+5. Does your project use TypeScript? ‣ no / **~~yes~~**  
+6. ✔ Node
+7. Would you like to install them now? ‣ No / **~~Yes~~**  
+8. ▸ npm  
+
+2 - Instale a extensão do Eslint(caso não tenha ainda):  
+```sh
+code --install-extension dbaeumer.vscode-eslint
+```
+
+3 - Para testar, vamos provocar um erro comum, adicionando em **index.ts** uma variável sem usá-la posteriormente
+```js
+let test = 10; 
+```  
+Deve aparecer em PROBLEMS:  
+'test' is never reassigned. Use 'const' instead.  
+'test' is assigned a value but never used.  
+
+4 - Compile:
+```sh
+npm run compile
+```  
+* Perceba que agora que também está apontando erro no arquivo index.js da pasta dist.  
+Para corrigir crie um arquivo **.eslintignore** contendo:
+
+```ini
+# Dist Folder
+dist
+```  
+Compile novamente ou altere qquer coisa no index.js e salve e veja que agora ele está ignorando essa pasta.
+
+5 - Quanto aos erros **'test' is assigned a value but never used.** etc, prefiro que seja apenas um alerta e não um erro.  
+Para alterar isso, devemos criar uma sessão de regras no **eslint.config.mjs** criado durante a instalação do Eslint
+
+* Note que os erros foram seguidos dos links para documentação das regras:  
+https://eslint.org/docs/latest/rules/prefer-const  
+https://typescript-eslint.io/rules/no-unused-vars
+
+A primeira coisa que aparece bem grande nas páginas é **prefer-const** e **no-unused-vars**  
+que são justamente o nome das regras, então basta adicionar na seção **rules** e mudar a definição a gosto.  
+
+```js
+// ...
+export default defineConfig([
+  { files: ["**/*.{js,mjs,cjs,ts}"], plugins: { js }, extends: ["js/recommended"] },
+  { files: ["**/*.{js,mjs,cjs,ts}"], languageOptions: { globals: globals.node } },
+  tseslint.configs.recommended,
+  // Adicionar aqui, depois de recommended a sessão de regras:
+  {
+    rules: {
+      "prefer-const": "warn",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "warn"
+    }
+  }
+]);
+```
+
+6 - Vamos testar se "pegou" configuração.  
+
+Depois de let test = 10, adicione:
+```js
+test = 4;
+```
+O alerta: 'test' is never reassigned. Use 'const' instead, deve desaparecer.
+
+```js
+console.log(test);
+```
+O alerta: 'test' is assigned a value but never used, deve desaparecer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
