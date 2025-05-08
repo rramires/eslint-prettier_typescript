@@ -1,0 +1,28 @@
+{
+  "name": "eslint-prettier",
+  "version": "1.0.0",
+  "description": "Instação e configuração do TypeScript + Eslint + Prettier",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "compile": "npx tsc",
+    "start": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rramires/eslint-prettier.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rramires/eslint-prettier/issues"
+  },
+  "homepage": "https://github.com/rramires/eslint-prettier#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.15.15",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}
