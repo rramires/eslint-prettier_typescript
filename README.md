@@ -358,6 +358,8 @@ code --install-extension esbenp.prettier-vscode
 },
 ```
 
+Vá no **index.ts** e salve. Devem sumir os ponto e vírgulas, as aspas devem mudar pra simples, etc
+
 6 - Caso queira, crie os comandos na sessão de **scripts** do **package.json**:
 
 ```json
@@ -366,6 +368,8 @@ code --install-extension esbenp.prettier-vscode
   "format": "prettier --write \"src/**/*.ts\""
 }
 ```
+
+Testando. Vá no **index.ts** e volte aspas duplas e ponto e vírgula.
 
 Verificar:
 
