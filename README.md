@@ -104,10 +104,7 @@ npx tsx src/index.ts
 
 --- 
 
-### Instação e configuração do Eslint + Prettier
-
-* Na versão mais nova do Eslint, não é mais papel do Eslint verificar estilos. Por isso não tem mais as opções de escolher os modelos do Airbnb, Google, etc  
-Para isso devemos usar o Prettier daqui pra frente para formatação do código.
+### Instação e configuração do Eslint
 
 1 - Instale o Eslint:  
 [Getting Started with ESLint](https://eslint.org/docs/latest/use/getting-started)
@@ -145,12 +142,23 @@ Deve aparecer em PROBLEMS:
 npm run compile
 ```  
 * Perceba que agora que também está apontando erro no arquivo index.js da pasta dist.  
-Para corrigir crie um arquivo **.eslintignore** contendo:
-
-```ini
-# Dist Folder
-dist
+Para corrigir crie uma regra **ignores: ["dist/*"]** no **defineConfig** em **eslint.config.mjs**:  
+```js
+// ...
+export default defineConfig([
+  // Adicionar aqui
+  { ignores: ["dist/*"] },
+  //
+  { files: ["**/*.{js,mjs,cjs,ts}"], plugins: { js }, extends: ["js/recommended"] },
+  { files: ["**/*.{js,mjs,cjs,ts}"], languageOptions: { globals: globals.node } },
+  tseslint.configs.recommended
+]);
 ```  
+* Nesse local (ignores:[...]) agora é possível adicionar mais pastas ou arquivos para serem ignorados pelo Eslint, caso necessário.  
+* Funciona ainda adicionar um **.eslintignore**, mas está em classificado como **deprecated**, então melhor a solução nova, acima descrita.  
+
+
+  
 Compile novamente ou altere qquer coisa no index.js e salve e veja que agora ele está ignorando essa pasta.
 
 5 - Quanto aos erros **'test' is assigned a value but never used.** etc, prefiro que seja apenas um alerta e não um erro.  
@@ -173,25 +181,87 @@ export default defineConfig([
   {
     rules: {
       "prefer-const": "warn",
-      "no-unused-vars": "off",
+      "no-unused-vars": "off", 
       "@typescript-eslint/no-unused-vars": "warn"
     }
   }
+  //
 ]);
 ```
 
-6 - Vamos testar se "pegou" configuração.  
+6 - Vamos testar se "pegou" a configuração:   
+
+Troque o const por let no index.ts:
+```js
+let test = 10;
+```
+O alerta: 'test' is never reassigned. Use 'const' instead, deve desaparecer.
 
 Depois de let test = 10, adicione:
 ```js
 test = 4;
 ```
-O alerta: 'test' is never reassigned. Use 'const' instead, deve desaparecer.
 
+E então:
 ```js
 console.log(test);
 ```
 O alerta: 'test' is assigned a value but never used, deve desaparecer.
+
+7 - Caso necessite, crie os comandos na sessão de **scripts** do **package.json**:
+
+```json
+"scripts": {
+  "lint": "eslint . --ext .ts",
+  "lint:fix": "eslint . --ext .ts --fix"
+}
+```
+
+8 - Para testar, experimente deixar novamente somente o let test = 10; no index.ts para voltar os erros e execute:
+```sh
+npm run lint
+```
+Veja os dois erros, agora no terminal
+
+Para que ele tente corrigir:
+```sh
+npm run lint:fix
+```
+Perceba que ele trocou o let por const: 
+```js
+const test = 10;
+```
+* Mas o alerta da variável não ter sido usada, continua. E isso o **--fix** no comando não vai resolver.  
+
+Uma maneira de remover a checagem de uma linha espeçifica, que vc tem certeza que vai usar mais tarde é usar como comentário // eslint-disable-next-line. Adicione e veja remover o warning:
+
+```js
+// eslint-disable-next-line
+const test = 10;
+```
+
+Para remover a checagem de um arquivo inteiro, adicione no início dele: 
+
+```js
+/* eslint-disable */
+```
+
+Ou um trecho: 
+```js
+/* eslint-disable */
+alert("foo");
+/* eslint-enable */
+```
+
+Veja mais na documentação:  
+[Configure Rules](https://eslint.org/docs/latest/use/configure/rules)  
+
+
+
+
+
+
+
 
 
 
