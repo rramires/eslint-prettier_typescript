@@ -122,7 +122,7 @@ npx tsx src/index.ts
 
 ---
 
-### Instação e configuração do Eslint
+### Instalação e configuração do Eslint
 
 1 - Instale o Eslint:  
 [Getting Started with ESLint](https://eslint.org/docs/latest/use/getting-started)
@@ -184,6 +184,7 @@ export default defineConfig([
 
 - Nesse local (ignores:[...]) agora é possível adicionar mais pastas ou arquivos para serem ignorados pelo Eslint, caso necessário.
 - Funciona ainda adicionar um **.eslintignore**, mas está em classificado como **deprecated**, então melhor a solução nova, acima descrita.
+- Perceba que foi gerado na instalação o **eslint.config.mjs**, que é a versão mais nova do aquivo de configuração, pois os **.eslintrc.\*** , não são mais compatíveis.
 
 Compile novamente ou altere qquer coisa no index.js e salve e veja que agora ele está ignorando essa pasta.
 
@@ -382,6 +383,8 @@ Corrigir:
 ```sh
 npm run format
 ```
+
+---
 
 ### Garantindo que não vai ter conflito entre o Eslint e o Prettier.
 
