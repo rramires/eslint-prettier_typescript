@@ -35,6 +35,7 @@ No **tsconfig.json** modifique:
 	"compilerOptions": {
 		"lib": ["ES2023"],
 		"module": "node16",
+		"moduleResolution": "node16",
 		"target": "ES2023"
 	}
 }
