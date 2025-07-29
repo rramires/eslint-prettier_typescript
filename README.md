@@ -1,4 +1,4 @@
-# eslint-prettier
+# eslint-prettier-for-typescript
 
 #### Eslint + Prettier setup without headaches and conflicts
 
