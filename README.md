@@ -1,4 +1,4 @@
-# eslint-prettier-for-typescript rev 22/04/25
+# eslint-prettier-for-typescript rev 01/06/26
 
 #### Eslint + Prettier setup without headaches and conflicts
 
@@ -556,5 +556,88 @@ import fs from 'node:fs'
 ```sh
 git add .
 git commit -m "chore: add Prettier and ESLint configuration files"
+git push
+```
+
+---
+
+### Forçando o uso de chaves em blocos com a regra curly
+
+- Por padrão, é possível escrever `if`, `else`, `for`, `while` e `do` sem chaves quando o corpo tem apenas uma linha. Para manter o código consistente e evitar bugs, podemos forçar o uso de chaves em todos os casos.  
+  Vamos usar duas camadas que trabalham juntas: a regra nativa do Eslint e um plugin do Prettier.
+
+1 - A regra **curly** já vem com o Eslint, não precisa de plugin. No modo **"all"** (padrão) ela exige chaves em todos os casos.  
+[Curly Rule](https://eslint.org/docs/latest/rules/curly)
+
+- **Atenção à ordem:** o **eslint-config-prettier** trata o curly como uma _special rule_ e o desativa (define como `off`), porque nas opções **"multi-line"** e **"multi-or-nest"** ele pode conflitar com o Prettier. Como o **eslintConfigPrettier** entra por último no array, qualquer curly definido antes dele é anulado.  
+  Por isso, adicione o curly em um bloco próprio **depois** do **eslintConfigPrettier** no **eslint.config.js**, para reativá-lo. No modo **"all"** não há conflito real com o Prettier:
+
+```js
+/* ...
+	eslintConfigPrettier, */
+	// curly depois do eslintConfigPrettier, que o desativa como special rule
+	{
+		rules: {
+			curly: ['error', 'all'],
+		},
+	},
+/* ]) */
+```
+
+2 - Para testar, deixe no **index.ts** um if sem chaves (use uma condição não constante, senão a regra **no-constant-condition** acusa antes):
+
+```js
+if (lang) console.log(`Hello World from ${lang}!`)
+```
+
+Deve aparecer em PROBLEMS:  
+Expected { after 'if' condition
+
+Com o **--fix**, o Eslint adiciona as chaves automaticamente:
+
+```sh
+pnpm run lint:fix
+```
+
+3 - O Prettier normalmente não altera a estrutura do código, então não força chaves por conta própria. Para que ele também faça isso ao formatar, instale o **prettier-plugin-curly**, que é o equivalente à opção **"all"** da regra curly, no nível do formatter:  
+[prettier-plugin-curly](https://github.com/JoshuaKGoldberg/prettier-plugin-curly)
+
+```sh
+pnpm add -D prettier-plugin-curly
+```
+
+4 - No **prettier.config.js**, adicione o plugin:
+
+```js
+/**
+ * @see https://prettier.io/docs/configuration
+ * @type {import("prettier").Config}
+ */
+const config = {
+	// Adicione
+	plugins: ['prettier-plugin-curly'],
+	// resto das opções existentes
+	printWidth: 80,
+	endOfLine: 'lf',
+	singleQuote: true,
+	quoteProps: 'as-needed',
+	semi: false,
+	useTabs: true,
+	tabWidth: 4,
+	arrowParens: 'always',
+}
+
+export default config
+```
+
+5 - Para testar, volte o if sem chaves no **index.ts** e salve. As chaves devem ser adicionadas automaticamente.
+
+- Resumindo as duas camadas: o **prettier-plugin-curly** age no formatter e adiciona as chaves ao salvar, independente do Eslint. A regra **curly** do Eslint sinaliza a violação no editor e no terminal, mas só funciona se for declarada **depois** do **eslintConfigPrettier**, como feito no passo 1. Juntas apontam na mesma direção: o Eslint avisa e o Prettier corrige ao salvar, o mesmo fluxo das outras regras de formatação.
+
+6 - Comite como:
+
+```sh
+git add .
+git commit -m "chore: enforce curly braces with ESLint rule and Prettier plugin"
 git push
 ```

@@ -3,6 +3,7 @@
  * @type {import("prettier").Config}
  */
 const config = {
+	plugins: ['prettier-plugin-curly'],
 	printWidth: 80,
 	endOfLine: 'lf',
 	singleQuote: true,
